@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library("readxl")
+library(tidyr)
 ```
 
 ## Problem 1
@@ -45,6 +46,36 @@ prcp2019_data =
 
 prcp_data = 
   left_join(prcp2018_data, prcp2019_data, by="month") %>% 
+  mutate(month=month.name[])
   
+```
+
+## Problem 2
+
+Cleaning and Joining Datasets
+
+```{r}
+pols_data =
+  read_csv(file= "./data/pols-month.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(col = "mon",into= c("year","month","day"), sep ="-", remove = TRUE, convert = TRUE, extra = 'warn',fill='warn') %>%
+  mutate(
+    month= month.abb[month],
+    president = recode(prez_gop, '1' = "gop", "0"="dem")
+    ) %>% 
+  select(-day, -prez_gop, -prez_dem)
+
+```
+
+Clean snp dataset
+
+```{r}
+snp_data =
+  read_csv(file = "./data/snp.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(col = "date",into = c("month","day","year"), sep = "/", remove = TRUE, convert = TRUE, extra = 'warn',fill='warn') %>%
+  mutate(
+    month= month.abb[month]) %>% 
+  select(-day)
 ```
 
