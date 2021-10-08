@@ -1,0 +1,50 @@
+---
+title: "p8105_hw2_ar4173"
+author: "Anand Rajan"
+date: "10/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library("readxl")
+```
+
+## Problem 1
+
+Data Import and Cleaning of Trash Wheel Dataset
+
+```{r}
+trashwheel_data = 
+read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel") %>% 
+janitor::clean_names() %>% 
+select(-x15, -x16,-x17) %>% 
+drop_na() %>% 
+mutate(across(c(sports_balls), ~ round(., 0)))
+
+trashwheel_data
+```
+
+
+Cleaning and Combining Precipitation data for 2018 and 2019
+
+
+```{r}
+prcp2018_data =
+  read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 5, range="A2:B15") %>% 
+  janitor::clean_names() %>% 
+  drop_na() %>% 
+  mutate(year="2018")
+
+prcp2019_data =
+  read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 4, range="A2:B15") %>% 
+  janitor::clean_names() %>% 
+  drop_na() %>% 
+  mutate(year="2019")
+
+prcp_data = 
+  left_join(prcp2018_data, prcp2019_data, by="month") %>% 
+  
+```
+
