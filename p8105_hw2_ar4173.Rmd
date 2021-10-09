@@ -73,9 +73,50 @@ Clean snp dataset
 snp_data =
   read_csv(file = "./data/snp.csv") %>% 
   janitor::clean_names() %>% 
-  separate(col = "date",into = c("month","day","year"), sep = "/", remove = TRUE, convert = TRUE, extra = 'warn',fill='warn') %>%
+  mutate(lubridate::mdy(date)) %>% 
+  separate(col = "lubridate::mdy(date)",into = c("year","month","day"), sep = "-", remove = TRUE, convert = TRUE, extra = 'warn',fill='warn') %>%
   mutate(
-    month= month.abb[month]) %>% 
-  select(-day)
+    month= month.abb[month],
+    year= if_else(year>2021, year-100, as.numeric(year))) %>% 
+  select(-day, -date) %>% 
+  relocate(year,month,close)
+```
+
+clean unemployment dataset
+
+```{r}
+unemployment_data =
+  read_csv(file= "./data/unemployment.csv")
+
+
+unemployment_tidy_data= 
+  pivot_longer(
+    unemployment_data,
+    Jan:Dec,
+    names_to= "month",
+    values_to = "Percentage of Unemployment"
+  )
+```
+
+
+
+```{r}
+temp_join =
+  inner_join(snp_data,pols_data, by=c("year"="year","month"="month"))
+
+poltics_success=
+  inner_join(temp_join,unemployment_tidy_data,by=c("year"="Year","month"="month") )
+```
+
+#Problem 3
+
+```{r}
+babynames =
+  read_csv(file="./data/")
+```
+
+
+```{r}
+
 ```
 

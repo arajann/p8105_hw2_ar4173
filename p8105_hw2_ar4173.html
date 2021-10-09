@@ -216,7 +216,59 @@ prcp2019_data =
   mutate(year=&quot;2019&quot;)
 
 prcp_data = 
-  left_join(prcp2018_data, prcp2019_data, by=&quot;month&quot;) </code></pre>
+  left_join(prcp2018_data, prcp2019_data, by=&quot;month&quot;) %&gt;% 
+  mutate(month=month.name[])</code></pre>
+</div>
+<div id="problem-2" class="section level2">
+<h2>Problem 2</h2>
+<p>Cleaning and Joining Datasets</p>
+<pre class="r"><code>pols_data =
+  read_csv(file= &quot;./data/pols-month.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  separate(col = &quot;mon&quot;,into= c(&quot;year&quot;,&quot;month&quot;,&quot;day&quot;), sep =&quot;-&quot;, remove = TRUE, convert = TRUE, extra = &#39;warn&#39;,fill=&#39;warn&#39;) %&gt;%
+  mutate(
+    month= month.abb[month],
+    president = recode(prez_gop, &#39;1&#39; = &quot;gop&quot;, &quot;0&quot;=&quot;dem&quot;)
+    ) %&gt;% 
+  select(-day, -prez_gop, -prez_dem)</code></pre>
+<pre><code>## Rows: 822 Columns: 9</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## dbl  (8): prez_gop, gov_gop, sen_gop, rep_gop, prez_dem, gov_dem, sen_dem, r...
+## date (1): mon</code></pre>
+<pre><code>## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre><code>## Warning: Unreplaced values treated as NA as .x is not compatible. Please specify
+## replacements exhaustively or supply .default</code></pre>
+<p>Clean snp dataset</p>
+<pre class="r"><code>snp_data =
+  read_csv(file = &quot;./data/snp.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  mutate(lubridate::mdy(date)) %&gt;% 
+  separate(col = &quot;lubridate::mdy(date)&quot;,into = c(&quot;year&quot;,&quot;month&quot;,&quot;day&quot;), sep = &quot;-&quot;, remove = TRUE, convert = TRUE, extra = &#39;warn&#39;,fill=&#39;warn&#39;) %&gt;%
+  mutate(
+    month= month.abb[month]) %&gt;% 
+  select(-day, -date) %&gt;% 
+  relocate(year,month,close)</code></pre>
+<pre><code>## Rows: 787 Columns: 2</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (1): date
+## dbl (1): close</code></pre>
+<pre><code>## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<p>clean unemployment dataset</p>
+<pre class="r"><code>unemployment_data =
+  read_csv(file= &quot;./data/unemployment.csv&quot;)</code></pre>
+<pre><code>## Rows: 68 Columns: 13</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## dbl (13): Year, Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec</code></pre>
+<pre><code>## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 
 
