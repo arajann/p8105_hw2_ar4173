@@ -118,18 +118,62 @@ poltics_success=
 Import and Tidy Baby Names dataset
 ```{r}
 babynames =
-  read_csv(file="./data/Popular_Baby_names.csv") %>% 
-  rename("birth_year"="Year of Birth", "first_name"= "Child's First Name") %>% 
-  pivot_wider(
-    names_from="birth_year",
-    values_from = "Count"
-              )
-
+  read_csv(file="./data/Popular_Baby_names.csv") %>%
+  janitor::clean_names() %>%
+  distinct(year_of_birth,ethnicity,childs_first_name,.keep_all=TRUE) %>% 
+  mutate(
+    ethnicity = replace(ethnicity, ethnicity=="BLACK NON HISP", "BLACK NON HISPANIC"),
+    ethnicity = replace(ethnicity, ethnicity=="WHITE NON HISP", "WHITE NON HISPANIC"),
+    ethnicity = replace(ethnicity, ethnicity=="ASIAN AND PACI", "ASIAN AND PACIFIC ISLANDER")
+    )
   
 ```
 
 
 ```{r}
+olivia_df = pivot_wider(
+  babynames,
+  names_from = year_of_birth,
+  values_from = rank
+) %>% 
+  filter(childs_first_name == "Olivia") %>% 
+
+
+
+```
+
+
+Table displaying P
+
+```{r}
+male_df =
+  filter(
+  babynames,
+  rank=="1",
+  gender=="MALE"
+  ) %>% 
+  pivot_wider(
+  names_from = year_of_birth ,
+  values_from = rank
+) %>% 
+ janitor::clean_names()
+
+```
+
+```{r}
+male_2016 =
+  filter(
+    babynames,
+    ethnicity == "WHITE NON HISPANIC",
+    year_of_birth == "2016",
+    gender == "MALE"
+  )
+
+ggplot(male_2016,aes(x=rank, y=count)) + geom_point() + 
+  labs(
+    title = "Populariy of Male Baby Names among White Non Hispanic Children in 2016",
+    x= "Rank in Popularity of Baby Name",
+    y="Number of Babies with Name")
 
 ```
 
