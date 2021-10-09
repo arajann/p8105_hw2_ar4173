@@ -218,6 +218,7 @@ prcp2019_data =
 prcp_data = 
   left_join(prcp2018_data, prcp2019_data, by=&quot;month&quot;) %&gt;% 
   mutate(month=month.name[])</code></pre>
+<pre class="r"><code>Conclusion Conclusion</code></pre>
 </div>
 <div id="problem-2" class="section level2">
 <h2>Problem 2</h2>
@@ -248,7 +249,8 @@ prcp_data =
   mutate(lubridate::mdy(date)) %&gt;% 
   separate(col = &quot;lubridate::mdy(date)&quot;,into = c(&quot;year&quot;,&quot;month&quot;,&quot;day&quot;), sep = &quot;-&quot;, remove = TRUE, convert = TRUE, extra = &#39;warn&#39;,fill=&#39;warn&#39;) %&gt;%
   mutate(
-    month= month.abb[month]) %&gt;% 
+    month= month.abb[month],
+    year= if_else(year&gt;2021, year-100, as.numeric(year))) %&gt;% 
   select(-day, -date) %&gt;% 
   relocate(year,month,close)</code></pre>
 <pre><code>## Rows: 787 Columns: 2</code></pre>
@@ -269,6 +271,40 @@ prcp_data =
 <pre><code>## 
 ## i Use `spec()` to retrieve the full column specification for this data.
 ## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>unemployment_tidy_data= 
+  pivot_longer(
+    unemployment_data,
+    Jan:Dec,
+    names_to= &quot;month&quot;,
+    values_to = &quot;Percentage of Unemployment&quot;
+  )</code></pre>
+<p>Joining the Datasets</p>
+<pre class="r"><code>temp_join =
+  inner_join(snp_data,pols_data, by=c(&quot;year&quot;=&quot;year&quot;,&quot;month&quot;=&quot;month&quot;))
+
+poltics_success=
+  inner_join(temp_join,unemployment_tidy_data,by=c(&quot;year&quot;=&quot;Year&quot;,&quot;month&quot;=&quot;month&quot;) )</code></pre>
+<p>#Problem 3</p>
+<p>Import and Tidy Baby Names dataset</p>
+<pre class="r"><code>babynames =
+  read_csv(file=&quot;./data/Popular_Baby_names.csv&quot;) %&gt;% 
+  rename(&quot;birth_year&quot;=&quot;Year of Birth&quot;, &quot;first_name&quot;= &quot;Child&#39;s First Name&quot;) %&gt;% 
+  pivot_wider(
+    names_from=&quot;birth_year&quot;,
+    values_from = &quot;Count&quot;
+              )</code></pre>
+<pre><code>## Rows: 19418 Columns: 6</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (3): Gender, Ethnicity, Child&#39;s First Name
+## dbl (3): Year of Birth, Count, Rank</code></pre>
+<pre><code>## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre><code>## Warning: Values are not uniquely identified; output will contain list-cols.
+## * Use `values_fn = list` to suppress this warning.
+## * Use `values_fn = length` to identify where the duplicates arise
+## * Use `values_fn = {summary_fun}` to summarise duplicates</code></pre>
 </div>
 
 

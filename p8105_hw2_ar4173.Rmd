@@ -28,7 +28,7 @@ trashwheel_data
 ```
 
 
-Cleaning and Combining Precipitation data for 2018 and 2019
+Cleaning and Combining Precipitation data from 2018 and 2019
 
 
 ```{r}
@@ -48,6 +48,11 @@ prcp_data =
   left_join(prcp2018_data, prcp2019_data, by="month") %>% 
   mutate(month=month.name[])
   
+```
+
+
+```{r eval=FALSE}
+The trash wheel data set 
 ```
 
 ## Problem 2
@@ -98,7 +103,7 @@ unemployment_tidy_data=
   )
 ```
 
-
+Joining the Datasets
 
 ```{r}
 temp_join =
@@ -110,9 +115,17 @@ poltics_success=
 
 #Problem 3
 
+Import and Tidy Baby Names dataset
 ```{r}
 babynames =
-  read_csv(file="./data/")
+  read_csv(file="./data/Popular_Baby_names.csv") %>% 
+  rename("birth_year"="Year of Birth", "first_name"= "Child's First Name") %>% 
+  pivot_wider(
+    names_from="birth_year",
+    values_from = "Count"
+              )
+
+  
 ```
 
 
