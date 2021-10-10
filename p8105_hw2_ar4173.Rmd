@@ -16,15 +16,20 @@ library(tidyr)
 
 Data Import and Cleaning of Trash Wheel Dataset
 
-```{r}
+```{r message=FALSE}
 trashwheel_data = 
-read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel") %>% 
+read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = "Mr. Trash Wheel") %>% 
 janitor::clean_names() %>% 
 select(-x15, -x16,-x17) %>% 
 drop_na() %>% 
 mutate(across(c(sports_balls), ~ round(., 0)))
 
-trashwheel_data
+median_balls =
+  filter(trashwheel_data,
+         year == "2019"
+         ) 
+
+median(median_balls$sports_balls)
 ```
 
 
@@ -33,33 +38,31 @@ Cleaning and Combining Precipitation data from 2018 and 2019
 
 ```{r}
 prcp2018_data =
-  read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 5, range="A2:B15") %>% 
+  read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", 7, range="A2:B15") %>% 
   janitor::clean_names() %>% 
-  drop_na() %>% 
   mutate(year="2018")
 
 prcp2019_data =
-  read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 4, range="A2:B15") %>% 
+  read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", 6, range="A2:B15") %>% 
   janitor::clean_names() %>% 
-  drop_na() %>% 
   mutate(year="2019")
 
 prcp_data = 
-  left_join(prcp2018_data, prcp2019_data, by="month") %>% 
-  mutate(month=month.name[])
+  full_join(prcp2018_data, prcp2019_data, by="month") %>% 
+  mutate(month=month.name[month])
   
 ```
 
 
 ```{r eval=FALSE}
-The trash wheel data set 
+Regarding the trash wheel dataset, there were a total of 453 observations in the tidy dataset. The trash wheel data set shows both the volume(in cubic yards) and weight (in tons) of the trash at each dumpster at a specific time points. Moreover the datset tells us the counts of different contents found in the dumpsters, such as cigarettes and sports balls. This allows us to take summary data of the measured contents in the dumpsters. For example, the median number of sports balls found in dumpsters in 2019 was 9 balls. Now regarding the precipitation data, the final joined dataset shows the total precipitation(in inches) of each month, stratified by year(13 observations). Thus we can see side by side how the total precipitation for example in April 2018 differs from April 2019.Additionally, the last row shows the total precipitation for each year. In 2018 the total precipitation was 70.33 inches, as opposed to 33.95 inches in 2019. 
 ```
 
 ## Problem 2
 
-Cleaning and Joining Datasets
+Cleaning Pols Dataset
 
-```{r}
+```{r message=FALSE}
 pols_data =
   read_csv(file= "./data/pols-month.csv") %>% 
   janitor::clean_names() %>% 
@@ -72,9 +75,9 @@ pols_data =
 
 ```
 
-Clean snp dataset
+Cleaning snp dataset
 
-```{r}
+```{r message=FALSE}
 snp_data =
   read_csv(file = "./data/snp.csv") %>% 
   janitor::clean_names() %>% 
@@ -87,9 +90,9 @@ snp_data =
   relocate(year,month,close)
 ```
 
-clean unemployment dataset
+Cleaning Unemployment dataset
 
-```{r}
+```{r message=FALSE}
 unemployment_data =
   read_csv(file= "./data/unemployment.csv")
 
@@ -113,10 +116,16 @@ poltics_success=
   inner_join(temp_join,unemployment_tidy_data,by=c("year"="Year","month"="month") )
 ```
 
-#Problem 3
+
+```{r eval=FALSE}
+The pols dataset shows us the breakdown of the number of congressional representitatives, congressional senators, and state governors by their political affiliation and the political party of the president  for every month from January 1947 to June 2015(822 observations in the dataset). In this data, we are only looking at the GOP and the Democratic party. The snp dataset tells us the closing values of the S%P stock index(close) for every month from January 1950 to July 2015(787 total observations in the dataset).Finally the tidy unemployment dataset shows us the precentage of unemployment for every month from January 1948 to June 2015(816 total observations). Thus the resulting combined dataset, politics success, gives us a snapshot of the what the stock market and job market looked like each month while showing us the political breakdown of the US during that month, i.e number of GOP senators, number of democrat governors, political affiliation of the president. The combined dataset gives us data from January 1950 to June 2015(786 total observations on 11 variables).
+
+```
+
+## Problem 3
 
 Import and Tidy Baby Names dataset
-```{r}
+```{r message=FALSE}
 babynames =
   read_csv(file="./data/Popular_Baby_names.csv") %>%
   janitor::clean_names() %>%
@@ -128,7 +137,7 @@ babynames =
     )
   
 ```
-
+Table thats shows the rank in popularity of the name Olivia over time
 
 ```{r}
 olivia_df = pivot_wider(
@@ -136,14 +145,13 @@ olivia_df = pivot_wider(
   names_from = year_of_birth,
   values_from = rank
 ) %>% 
-  filter(childs_first_name == "Olivia") %>% 
+  filter(childs_first_name == "Olivia")
 
-
-
+olivia_df
 ```
 
 
-Table displaying P
+Table displaying the most popular name among male children over time
 
 ```{r}
 male_df =
@@ -158,7 +166,10 @@ male_df =
 ) %>% 
  janitor::clean_names()
 
+male_df
 ```
+
+Scatterplot that shows the # of Children with a name vs.  the rank in popularity
 
 ```{r}
 male_2016 =
